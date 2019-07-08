@@ -1,0 +1,35 @@
+#!/bin/perl
+
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+ 
+ca="/home/user/keys/ca.crt"
+cert="/home/user/keys/user.crt"
+key="/home/user/keys/user.key"
+remote="x.x.x.x"
+port="4430"
+proto="tcp-client"
+ 
+echo "Connecting to $remote:$port using $proto..."
+ 
+openvpn \
+--up "/bin/echo Yay up" \
+--remote $remote \
+--nobind \
+--dev tun \
+--proto $proto \
+--port $port \
+--up-restart \
+--persist-key \
+--persist-tun \
+--management 127.0.0.1 1194 \
+--management-query-passwords \
+--route-noexec \
+--client \
+--ca $ca \
+--cert $cert \
+--key $key \
+--script-security 2
